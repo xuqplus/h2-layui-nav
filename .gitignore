@@ -27,3 +27,5 @@
 .idea/
 .mvn
 .mvn/
+
+src/lib/

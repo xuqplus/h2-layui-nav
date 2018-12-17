@@ -1355,3 +1355,8 @@ html {
         overflow: auto
     }
 }
+
+/** !!! */
+#lay-tab-right-menu ul li:hover {
+    background-color: #bbb;
+}

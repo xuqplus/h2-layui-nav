@@ -178,32 +178,27 @@
             }
         );
     }();
+
 </script>
 <script>
     !function () {
         layui.use(['element', 'layer'], function () {
             var id = 'lay-tab-right-menu' // 选项卡右键菜单id
-            layui.jquery('#' + id).parent().remove()
             layui.jquery('.layui-tab').on('contextmenu', function (e) {
+                layui.jquery('#' + id).parent().remove()
                 if ('li' == e.target.tagName.toLowerCase()) {
                     var width = layui.jquery(document).width()
                     var height = layui.jquery(document).height()
                     var x = e.clientX
                     var y = e.clientY
-                    console.log(width);
-                    console.log(height);
-                    console.log(x);
-                    console.log(y);
-
                     var left = y;
                     var top = x;
-
-                    var html = '<ul style="left:' + left + 'px;top:' + top + 'px;display:block;">' +
-                        '<li>123</li>' +
-                        '<li>123</li>' +
-                        '<li>123</li>' +
-                        '<li>123</li>' +
-                        '<li>123</li>' +
+                    var html = '<ul data-id="' + layui.jquery(e.target).attr('lay-id') + '" style="left:' + left + 'px;top:' + top + 'px;display:block;text-align:center;background-color:#eee;cursor:default;">' +
+                        '<li> 关闭当前</li>' +
+                        '<li> 关闭其他</li>' +
+                        '<li> 关闭左侧</li>' +
+                        '<li> 关闭右侧</li>' +
+                        '<li> 关闭全部</li>' +
                         '</ul>';
                     layui.layer.open({
                         type: 1
@@ -212,19 +207,30 @@
                         , content: html
                         , shade: 0
                         , shadeClose: true
-                        , fixed: true
+                        , fixed: false
                         , resize: false
-                        , area: '8em'
+                        , resizing: function (layero, index) {
+                            layui.layer.close(index)
+                        }
+                        , area: '5em'
                         , offset: [left, top]
                         , id: id
                         , success: function (layero, index) {
                             layui.jquery(window).click(function () {
-                                console.log('window')
                                 layui.layer.close(index)
                             })
                             layui.jquery('.layui-show iframe')[0].contentWindow.onclick = function () {
-                                console.log('abc')
+                                layui.jquery(window.parent).trigger('click')
                             }
+                        }
+                    })
+                    layui.jquery('#' + id).on('click', function(e) {
+                        if ('li' == e.target.tagName.toLowerCase()) {
+                            console.log(layui.jquery(e.target).parent().attr('data-id'))
+                            layui.jquery('.layui-tab ul li').each(function (i, e) {
+                                console.log(i)
+                                console.log(layui.jquery(e).attr('lay-id'))
+                            })
                         }
                     })
                 }
@@ -232,6 +238,7 @@
             })
         })
     }();
+
 </script>
 </body>
 </html>
