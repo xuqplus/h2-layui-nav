@@ -76,6 +76,8 @@
         <!--<iframe class="layadmin-iframe" src="iframe.html" frameborder="0"></iframe>-->
         <!--</div>-->
     </div>
+
+    <div id="qqqq"></div>
 </div>
 <script src="layui/layui.js"></script>
 <script>
@@ -102,6 +104,7 @@
                             );
                         }
                     }
+                    // 选项卡切换
                     layui.element.tabChange('layui-tab', id);
                     layui.element.on('tab(layui-tab)', function (e) {
                         var id = layui.jquery(this).attr('lay-id');
@@ -122,6 +125,7 @@
                     location.href = '#1'
                 }
 
+                // 左侧菜单
                 layui.jquery.get({
                     url: 'findMenu?userId=' + location.hash.slice(1),
                     success: function (res) {
@@ -173,6 +177,60 @@
                 });
             }
         );
+    }();
+</script>
+<script>
+    !function () {
+        layui.use(['element', 'layer'], function () {
+            var id = 'lay-tab-right-menu' // 选项卡右键菜单id
+            layui.jquery('#' + id).parent().remove()
+            layui.jquery('.layui-tab').on('contextmenu', function (e) {
+                if ('li' == e.target.tagName.toLowerCase()) {
+                    var width = layui.jquery(document).width()
+                    var height = layui.jquery(document).height()
+                    var x = e.clientX
+                    var y = e.clientY
+                    console.log(width);
+                    console.log(height);
+                    console.log(x);
+                    console.log(y);
+
+                    var left = y;
+                    var top = x;
+
+                    var html = '<ul style="left:' + left + 'px;top:' + top + 'px;display:block;">' +
+                        '<li>123</li>' +
+                        '<li>123</li>' +
+                        '<li>123</li>' +
+                        '<li>123</li>' +
+                        '<li>123</li>' +
+                        '</ul>';
+                    layui.layer.open({
+                        type: 1
+                        , title: false
+                        , closeBtn: false
+                        , content: html
+                        , shade: 0
+                        , shadeClose: true
+                        , fixed: true
+                        , resize: false
+                        , area: '8em'
+                        , offset: [left, top]
+                        , id: id
+                        , success: function (layero, index) {
+                            layui.jquery(window).click(function () {
+                                console.log('window')
+                                layui.layer.close(index)
+                            })
+                            layui.jquery('.layui-show iframe')[0].contentWindow.onclick = function () {
+                                console.log('abc')
+                            }
+                        }
+                    })
+                }
+                return false;
+            })
+        })
     }();
 </script>
 </body>
