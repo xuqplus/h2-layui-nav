@@ -63,9 +63,7 @@
         </div>
         <div class="layui-tab" lay-allowClose="true" lay-filter="layui-tab">
             <ul class="layui-tab-title">
-                <li class="">
-                    <i class="layui-icon layui-icon-home"></i>
-                </li>
+                <li class="layui-icon layui-icon-home" lay-id="home_html"></li>
             </ul>
         </div>
     </div>
@@ -170,7 +168,6 @@
                                 })
                             }
                             menu.script = menu.script.replace(flag, '')
-                            // console.log(menu.script);
                             return menu.script
                         }
                     }
@@ -185,8 +182,9 @@
         layui.use(['element', 'layer'], function () {
             var id = 'lay-tab-right-menu' // 选项卡右键菜单id
             layui.jquery('.layui-tab').on('contextmenu', function (e) {
+                layui.jquery(e.target).click()
                 layui.jquery('#' + id).parent().remove()
-                if ('li' == e.target.tagName.toLowerCase()) {
+                if ('LI' == e.target.tagName) {
                     var width = layui.jquery(document).width()
                     var height = layui.jquery(document).height()
                     var x = e.clientX
@@ -194,11 +192,11 @@
                     var left = y;
                     var top = x;
                     var html = '<ul data-id="' + layui.jquery(e.target).attr('lay-id') + '" style="left:' + left + 'px;top:' + top + 'px;display:block;text-align:center;background-color:#eee;cursor:default;">' +
-                        '<li> 关闭当前</li>' +
-                        '<li> 关闭其他</li>' +
-                        '<li> 关闭左侧</li>' +
-                        '<li> 关闭右侧</li>' +
-                        '<li> 关闭全部</li>' +
+                        '<li data="curr">关闭当前</li>' +
+                        '<li data="other">关闭其他</li>' +
+                        '<li data="left">关闭左侧</li>' +
+                        '<li data="right">关闭右侧</li>' +
+                        '<li data="all">关闭全部</li>' +
                         '</ul>';
                     layui.layer.open({
                         type: 1
@@ -219,18 +217,42 @@
                             layui.jquery(window).click(function () {
                                 layui.layer.close(index)
                             })
-                            layui.jquery('.layui-show iframe')[0].contentWindow.onclick = function () {
-                                layui.jquery(window.parent).trigger('click')
+                            try {
+                                layui.jquery('.layui-show iframe')[0].contentWindow.onclick = function () {
+                                    layui.jquery(window.parent).trigger('click')
+                                }
+                            } catch (e) {
+
                             }
                         }
                     })
-                    layui.jquery('#' + id).on('click', function(e) {
-                        if ('li' == e.target.tagName.toLowerCase()) {
-                            console.log(layui.jquery(e.target).parent().attr('data-id'))
-                            layui.jquery('.layui-tab ul li').each(function (i, e) {
-                                console.log(i)
-                                console.log(layui.jquery(e).attr('lay-id'))
-                            })
+                    layui.jquery('#' + id).on('click', function (e) {
+                        if ('LI' == e.target.tagName) {
+                            var whatClose = layui.jquery(e.target).attr('data')
+                            var dataId = layui.jquery(e.target).parent().attr('data-id')
+                            var tabIndex = layui.jquery('.layui-tab li[lay-id=' + dataId + ']').index()
+                            if ('curr' == whatClose) {
+                                layui.element.tabDelete('layui-tab', dataId)
+                                return
+                            }
+                            layui.jquery('.layui-tab ul li').each(function (i, ele) {
+                                var layId = layui.jquery(ele).attr('lay-id')
+                                if ('other' == whatClose) {
+                                    if (i != tabIndex) {
+                                        layui.element.tabDelete('layui-tab', layId)
+                                    }
+                                } else if ('left' == whatClose) {
+                                    if (i < tabIndex) {
+                                        layui.element.tabDelete('layui-tab', layId)
+                                    }
+                                } else if ('right' == whatClose) {
+                                    if (i > tabIndex) {
+                                        layui.element.tabDelete('layui-tab', layId)
+                                    }
+                                } else if ('all' == whatClose) {
+                                    layui.element.tabDelete('layui-tab', layId)
+                                }
+                            });
                         }
                     })
                 }
